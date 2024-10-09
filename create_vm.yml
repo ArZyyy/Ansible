@@ -1,0 +1,22 @@
+- name: Créer une VM minimale sur Proxmox
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Créer une VM
+      community.general.proxmox_kvm:
+        api_host: "test"
+        api_user: "user"
+        api_password: "user"
+        node: "proxmox-node"
+        vmid: 103                  # ID de la VM, choisissez un ID unique
+        name: "vm-minimal"
+        cpu: 1                     # Nombre de CPU
+        memory: 512                # Mémoire RAM en MB
+        disk: 10                   # Taille du disque en GB
+        storage: "local-lvm"       # Nom du stockage sur Proxmox
+        net0: "virtio,bridge=vmbr0" # Interface réseau avec le bridge
+        ostemplate: "local:debian-12.7.0-amd64-netinst.iso"
+        password: "user"
+        timeout: 300
+        state: present
+      delegate_to: localhost

@@ -1,22 +1,36 @@
 - name: Créer une VM minimale sur Proxmox
   hosts: localhost
   gather_facts: no
+  vars:
+    proxmox_api_host: "test"
+    proxmox_api_user: "user"
+    proxmox_api_password: "user"
+    proxmox_node: "proxmox-node"
+    vm_id: 103
+    vm_name: "vm-minimal"
+    vm_cpu: 1
+    vm_memory: 512
+    vm_disk: 10
+    vm_storage: "local-lvm"
+    vm_net: "virtio,bridge=vmbr0"
+    vm_template: "local:debian-12.7.0-amd64-netinst.iso"
+    vm_password: "user"
   tasks:
     - name: Créer une VM
       community.general.proxmox_kvm:
-        api_host: "test"
-        api_user: "user"
-        api_password: "user"
-        node: "proxmox-node"
-        vmid: 103                  # ID de la VM, choisissez un ID unique
-        name: "vm-minimal"
-        cpu: 1                     # Nombre de CPU
-        memory: 512                # Mémoire RAM en MB
-        disk: 10                   # Taille du disque en GB
-        storage: "local-lvm"       # Nom du stockage sur Proxmox
-        net0: "virtio,bridge=vmbr0" # Interface réseau avec le bridge
-        ostemplate: "local:debian-12.7.0-amd64-netinst.iso"
-        password: "user"
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        cpu: "{{ vm_cpu }}"
+        memory: "{{ vm_memory }}"
+        disk: "{{ vm_disk }}"
+        storage: "{{ vm_storage }}"
+        net0: "{{ vm_net }}"
+        ostemplate: "{{ vm_template }}"
+        password: "{{ vm_password }}"
         timeout: 300
         state: present
       delegate_to: localhost

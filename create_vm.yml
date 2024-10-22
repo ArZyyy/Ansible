@@ -7,7 +7,7 @@
         name: python3-pip
         state: present
       become: yes
-      
+
     - name: Install setuptools module via pip
       ansible.builtin.pip:
         name: setuptools
@@ -49,10 +49,10 @@
         name: "{{ vm_name }}"
         state: started
 
-     - name: wait 30s
-       ansible.builtin.pause:
-         seconds: 30
-    
+    - name: wait 30s
+      ansible.builtin.pause:
+        seconds: 30
+
 - name: Set VM IP and Hostname
   hosts: 192.168.1.201 # This is the IP that is set for the template, if you use a different IP update here.
   tasks:
@@ -72,4 +72,4 @@
 
     - name: Pause for 30 seconds to wait for reboot
       ansible.builtin.pause:
-        seconds: "10"
+        seconds: 10

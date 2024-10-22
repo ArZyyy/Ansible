@@ -54,12 +54,12 @@
          seconds: 30
     
 - name: Set VM IP and Hostname
-  hosts: 172.16.1.200 # This is the IP that is set for the template, if you use a different IP update here.
+  hosts: 192.168.1.201 # This is the IP that is set for the template, if you use a different IP update here.
   tasks:
     - name: Update IP
       ansible.builtin.lineinfile:
         path: /etc/sysconfig/network-scripts/ifcfg-ens192
-        regex: "IPADDR=172.16.1.200" # Set to same IP as line 19
+        regex: "IPADDR=192.168.1.201" # Set to same IP as line 19
         line: "IPADDR={{ new_IP }}"
 
     - name: Update Hostname

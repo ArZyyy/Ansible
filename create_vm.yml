@@ -1,12 +1,75 @@
-- hosts: 192.168.1.200
-  become: true
+---
+- name: Create VM from Template
+  hosts: build
   tasks:
+    - name: Install python3-pip
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
+      become: yes
+      
+    - name: Install setuptools module via pip
+      ansible.builtin.pip:
+        name: setuptools
+        state: present
 
-  - name: Create new VM with minimal options
-    community.general.proxmox_kvm:
-      proxmox_default_behavior: 'no_defaults'
-      api_user: 'root@pam'
-      api_password: 'AcDc1204@'
-      api_host: '192.168.1.200'
-      name: 'VM-via-Ansible'
-      node: 'unzy'
+    - name: Install requests module via pip
+      ansible.builtin.pip:
+        name: requests
+        state: present
+
+    - name: Install proxmoxer module via pip
+      ansible.builtin.pip:
+        name: proxmoxer
+        state: present
+
+    - name: Clone proxmox template
+      community.general.proxmox_kvm:
+        node: unzy
+        api_user: "root@pam"
+        api_password: "{{ proxmox_pass }}"
+        api_host: 192.168.1.200
+        api_port: 8006
+        storage: "local-lvm"
+        full: true
+        clone: "VM-via-Ansible"
+        name: "{{ vm_name }}"
+
+    - name: wait 10s
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        node: unzy
+        api_user: "root@pam"
+        api_password: "{{ proxmox_pass }}"
+        api_host: 192.168.1.200
+        api_port: 8006
+        name: "{{ vm_name }}"
+        state: started
+
+     - name: wait 30s
+       ansible.builtin.pause:
+         seconds: 30
+    
+- name: Set VM IP and Hostname
+  hosts: 172.16.1.200 # This is the IP that is set for the template, if you use a different IP update here.
+  tasks:
+    - name: Update IP
+      ansible.builtin.lineinfile:
+        path: /etc/sysconfig/network-scripts/ifcfg-ens192
+        regex: "IPADDR=172.16.1.200" # Set to same IP as line 19
+        line: "IPADDR={{ new_IP }}"
+
+    - name: Update Hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}.domain.local" # Update domain
+
+    - name: Reboot
+      ansible.builtin.command: "init 6"
+      ignore_errors: true
+
+    - name: Pause for 30 seconds to wait for reboot
+      ansible.builtin.pause:
+        seconds: "10"

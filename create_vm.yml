@@ -4,9 +4,9 @@
   tasks:
 #    - name: Install python3-pip
 #     ansible.builtin.yum:
- #       name: python3-pip
-  #      state: present
-  #    become: yes
+#       name: python3-pip
+#      state: present
+#    become: yes
 
     - name: Install setuptools module via pip
       ansible.builtin.pip:
@@ -33,8 +33,9 @@
         storage: "local-lvm"
         full: true
         clone: "VM-via-Ansible"
-        name: "{{ vm_name }}"
-
+        #name: "{{ vm_name }}"
+        name: "test"
+        
     - name: wait 10s
       ansible.builtin.pause:
         seconds: 10
@@ -46,7 +47,8 @@
         api_password: "{{ proxmox_pass }}"
         api_host: 192.168.1.200
         api_port: 8006
-        name: "{{ vm_name }}"
+        name: "test"
+        #name: "{{ vm_name }}"
         state: started
 
     - name: wait 30s
